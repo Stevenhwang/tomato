@@ -1,7 +1,9 @@
 package main
 
-import "log"
+import (
+	"tomato/cmd"
+)
 
 func main() {
-	log.Println("hello world")
+	cmd.Execute()
 }
