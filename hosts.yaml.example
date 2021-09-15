@@ -1,0 +1,22 @@
+---
+default:
+  user: root
+  key: 'C:/Users/90hua/.ssh/id_rsa'
+all:
+  hosts:
+    mail.example.com:
+  children:
+    webservers:
+      hosts:
+        foo.example.com:
+        bar.example.com:
+    dbservers:
+      hosts:
+        one.example.com:
+        two.example.com:
+        three.example.com:
+    test:
+      hosts:
+        192.168.241.130:
+          user: root
+          password: 123456

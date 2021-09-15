@@ -1,0 +1,6 @@
+*.log
+.idea/
+.vscode/
+*.sublime*
+*.json
+*.yaml
