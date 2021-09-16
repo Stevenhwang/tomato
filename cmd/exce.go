@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"tomato/modules"
 	"tomato/utils"
 
 	"github.com/spf13/cobra"
@@ -18,12 +19,16 @@ var execCmd = &cobra.Command{
 			cmd.Usage()
 			utils.PrintRed("指定的 mode 参数错误")
 		}
-		utils.PrintGreen("%v", utils.ListHosts(hosts))
+		groups := utils.ListHosts(hosts)
 		moduleList := utils.ListModules()
 		if !utils.FindValInSlice(moduleList, module) {
 			cmd.Usage()
 			utils.PrintGreen("可用模块列表: %v\n", moduleList)
 			utils.PrintRed("指定的模块 %s 不存在", module)
+		}
+		switch module {
+		case "ping":
+			modules.ExecPing(mode, groups)
 		}
 	},
 }

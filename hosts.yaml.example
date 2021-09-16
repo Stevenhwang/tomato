@@ -1,7 +1,8 @@
 ---
 default:
   user: root
-  key: 'C:/Users/90hua/.ssh/id_rsa'
+  key: 'C:/Users/90hua/.ssh/id_rsa' # 默认优先使用key认证
+  port: 22
 all:
   hosts:
     mail.example.com:
@@ -19,4 +20,4 @@ all:
       hosts:
         192.168.241.130:
           user: root
-          password: 123456
+          password: '123456'
