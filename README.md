@@ -25,3 +25,11 @@ Available Commands:
   help        Help about any command
   master      开启 tomato master 服务
 ```
+
+## Example
+
+```bash
+tomato exec -m ping
+.\tomato.exe exec -H test ls
+.\tomato.exe exec -H test -m copy src=C:/Users/90hua/.ssh/id_rsa.pub  dest=/tmp/b/b/ds
+```
