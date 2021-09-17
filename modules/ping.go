@@ -41,7 +41,7 @@ func ExecPing(mode string, groups map[string]interface{}) {
 				//创建ssh session
 				session, err := client.NewSession()
 				if err != nil {
-					rp.PrintFail(host, "获取 ssh session 失败: %v", errs)
+					rp.PrintFail(host, "获取 ssh session 失败: %v", err)
 					wg.Done()
 					return
 				}
