@@ -34,8 +34,8 @@ var execCmd = &cobra.Command{
 }
 
 func init() {
-	execCmd.Flags().StringP("mode", "M", "ssh", "连接模式(ssh|server)")
-	execCmd.Flags().StringP("hosts", "H", "all", "主机")
+	execCmd.Flags().StringP("mode", "M", "ssh", "连接模式[ssh|server]")
+	execCmd.Flags().StringP("hosts", "H", "all", "主机[all|主机组|主机]")
 	execCmd.Flags().StringP("module", "m", "shell", "模块")
 	RootCmd.AddCommand(execCmd)
 }

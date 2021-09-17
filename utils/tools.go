@@ -27,25 +27,37 @@ func ListModules() []string {
 	return list
 }
 
-// 输出主机列表
+// 输出选中的主机列表
 func ListHosts(group string) map[string]interface{} {
+	// 获取所有主机和主机组名
+	list := map[string]interface{}{}
+	keys := []string{}
+	allhost := hosts.Hosts.GetStringMap("all.hosts")
+	for k, v := range allhost {
+		list[k] = v
+	}
+	childrenhost := hosts.Hosts.GetStringMap("all.children")
+	for k, v := range childrenhost {
+		keys = append(keys, k)
+		val := v.(map[string]interface{})
+		value := val["hosts"].(map[string]interface{})
+		for x, y := range value {
+			list[x] = y
+		}
+	}
 	if group == "all" {
-		list := map[string]interface{}{}
-		allhost := hosts.Hosts.GetStringMap("all.hosts")
-		for k, v := range allhost {
-			list[k] = v
-		}
-		childrenhost := hosts.Hosts.GetStringMap("all.children")
-		for _, v := range childrenhost {
-			val := v.(map[string]interface{})
-			value := val["hosts"].(map[string]interface{})
-			for x, y := range value {
-				list[x] = y
-			}
-		}
 		return list
 	} else {
-		key := fmt.Sprintf("all.children.%s.hosts", group)
-		return hosts.Hosts.GetStringMap(key)
+		if FindValInSlice(keys, group) {
+			key := fmt.Sprintf("all.children.%s.hosts", group)
+			return hosts.Hosts.GetStringMap(key)
+		} else {
+			value, ok := list[group]
+			if !ok {
+				return nil
+			} else {
+				return map[string]interface{}{group: value}
+			}
+		}
 	}
 }
