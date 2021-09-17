@@ -29,6 +29,8 @@ var execCmd = &cobra.Command{
 		switch module {
 		case "ping":
 			modules.ExecPing(mode, groups)
+		case "shell":
+			modules.ExecShell(mode, groups, args)
 		}
 	},
 }
