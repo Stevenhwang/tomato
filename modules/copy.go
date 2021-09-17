@@ -1,11 +1,13 @@
 package modules
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"sync"
+	"time"
 	"tomato/utils"
 
 	"github.com/pkg/sftp"
@@ -100,6 +102,14 @@ func ExecCopy(mode string, groups map[string]interface{}, args []string) {
 					wg.Done()
 					return
 				}
+				// 检查远端文件是否存在，存在的话备份原文件
+				if _, err := sftpClient.Lstat(dest); !os.IsNotExist(err) {
+					now := time.Now()
+					time_str := now.Format("2006-01-02-15-04-05")
+					backFile := fmt.Sprintf("%s-%s.bak", dest, time_str)
+					sftpClient.Rename(dest, backFile)
+				}
+				// 打开远端文件
 				destFile, err := sftpClient.Create(dest)
 				if err != nil {
 					rp.PrintFail(host, "创建 dest 文件失败: %v", err)
