@@ -31,6 +31,8 @@ var execCmd = &cobra.Command{
 			modules.ExecPing(mode, groups)
 		case "shell":
 			modules.ExecShell(mode, groups, args)
+		case "copy":
+			modules.ExecCopy(mode, groups, args)
 		}
 	},
 }

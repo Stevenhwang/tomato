@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"tomato/hosts"
 )
@@ -91,4 +92,21 @@ func FillParams(groups map[string]interface{}) map[string]map[string]interface{}
 		}
 	}
 	return result
+}
+
+// PathExists 判断所给路径文件/文件夹是否存在
+func PathExists(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+// IsDir 判断所给路径是否是文件夹
+func IsDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return s.IsDir()
 }
