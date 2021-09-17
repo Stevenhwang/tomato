@@ -61,3 +61,34 @@ func ListHosts(group string) map[string]interface{} {
 		}
 	}
 }
+
+// 填充主机列表的认证参数
+func FillParams(groups map[string]interface{}) map[string]map[string]interface{} {
+	result := map[string]map[string]interface{}{}
+	defaultuser := hosts.Hosts.GetString("default.user")
+	defaultkeyFile := hosts.Hosts.GetString("default.key")
+	defaultport := hosts.Hosts.GetInt("default.port")
+	for h, v := range groups {
+		result[h] = map[string]interface{}{"user": defaultuser, "key": defaultkeyFile, "port": defaultport, "password": ""}
+		if v != nil {
+			values := v.(map[string]interface{})
+			if u, ok := values["user"]; ok {
+				result[h]["user"] = u.(string)
+			}
+			if p, ok := values["port"]; ok {
+				result[h]["port"] = p.(int)
+			}
+			// 如果自定参数有key，那么就确认key认证
+			if k, ok := values["key"]; ok {
+				result[h]["key"] = k.(string)
+				continue
+			}
+			// 如果自定参数没有key，但是有password，那么确认password认证
+			if pass, ok := values["password"]; ok {
+				result[h]["key"] = ""
+				result[h]["password"] = pass.(string)
+			}
+		}
+	}
+	return result
+}

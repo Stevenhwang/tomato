@@ -1,8 +1,11 @@
 ---
+# 默认认证参数: user key port
 default:
   user: root
-  key: 'C:/Users/90hua/.ssh/id_rsa' # 默认优先使用key认证
+  key: 'C:/Users/90hua/.ssh/id_rsa'
   port: 22
+# 所有主机(每个主机可以自定认证参数: user password key port，这些会覆盖默认参数)
+# *** key比password优先级更高, 如果自定参数只指定了password, 那么使用password认证, 如果都指定了，用key认证 ***
 all:
   hosts:
     mail.example.com:
