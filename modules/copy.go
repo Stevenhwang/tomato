@@ -58,6 +58,11 @@ func ExecCopy(mode string, groups map[string]interface{}, args []string) {
 						dest = strings.ReplaceAll(arg, "dest=", "")
 					}
 				}
+				if len(src) == 0 || len(dest) == 0 {
+					rp.PrintFail(host, "必需参数不足(src和dest)")
+					wg.Done()
+					return
+				}
 				if !utils.PathExists(src) {
 					rp.PrintFail(host, "src路径不存在")
 					wg.Done()
