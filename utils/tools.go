@@ -2,9 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
-	"strings"
 	"tomato/hosts"
 )
 
@@ -20,12 +18,13 @@ func FindValInSlice(slice []string, val string) bool {
 
 // 输出模块列表
 func ListModules() []string {
-	list := []string{}
-	files, _ := ioutil.ReadDir("./modules")
-	for _, f := range files {
-		list = append(list, strings.ReplaceAll(f.Name(), ".go", ""))
-	}
-	return list
+	// list := []string{}
+	// files, _ := ioutil.ReadDir("./modules")
+	// for _, f := range files {
+	// 	list = append(list, strings.ReplaceAll(f.Name(), ".go", ""))
+	// }
+	// return list
+	return []string{"ping", "shell", "copy"}
 }
 
 // 输出选中的主机列表
