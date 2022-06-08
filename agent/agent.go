@@ -10,8 +10,8 @@ import (
 )
 
 func Start() {
-	nc, err := nats.Connect("192.168.1.188",
-		nats.UserInfo("nats", "123qwe"),
+	nc, err := nats.Connect("127.0.0.1",
+		nats.UserInfo("nats", "123qwe"),    // 会一直重连，密码不能错
 		nats.RetryOnFailedConnect(true),    // 连接失败重试
 		nats.ReconnectWait(30*time.Second), // 重试间隔30秒
 		nats.ReconnectHandler(func(_ *nats.Conn) {
