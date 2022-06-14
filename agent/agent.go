@@ -51,7 +51,7 @@ func Start() {
 		Info: utils.Info{
 			Mem:  utils.MD{Total: humanize.Bytes(v.Total), Free: humanize.Bytes(v.Free), UsedPercent: fmt.Sprintf("%.2f%%", v.UsedPercent)},
 			Disk: utils.MD{Total: humanize.Bytes(d.Total), Free: humanize.Bytes(d.Free), UsedPercent: fmt.Sprintf("%.2f%%", d.UsedPercent)},
-			Load: utils.LD{Load1: fmt.Sprintf("%.2f%%", l.Load1), Load5: fmt.Sprintf("%.2f%%", l.Load5), Load15: fmt.Sprintf("%.2f%%", l.Load15)},
+			Load: utils.LD{Load1: fmt.Sprintf("%.2f", l.Load1), Load5: fmt.Sprintf("%.2f", l.Load5), Load15: fmt.Sprintf("%.2f", l.Load15)},
 		}}
 	post, err := json.Marshal(&info)
 	if err != nil {
