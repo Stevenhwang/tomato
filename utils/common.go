@@ -1,15 +1,15 @@
 package utils
 
 type MD struct {
-	Total       string  `json:"total" validate:"required"`
-	Free        string  `json:"free" validate:"required"`
-	UsedPercent float64 `json:"usedpercent" validate:"required"`
+	Total       string `json:"total" validate:"required"`
+	Free        string `json:"free" validate:"required"`
+	UsedPercent string `json:"usedpercent" validate:"required"`
 }
 
 type LD struct {
-	Load1  float64 `json:"load1" validate:"required"`
-	Load5  float64 `json:"load5" validate:"required"`
-	Load15 float64 `json:"load15" validate:"required"`
+	Load1  string `json:"load1" validate:"required"`
+	Load5  string `json:"load5" validate:"required"`
+	Load15 string `json:"load15" validate:"required"`
 }
 
 type Info struct {
@@ -24,7 +24,7 @@ type Register struct {
 }
 
 type CMD struct {
-	Agents []string `json:"agents" validate:"required,gt=1,dive,required"`
+	Agents []string `json:"agents" validate:"required,gt=0,dive,required"`
 	CMD    string   `json:"cmd" validate:"required"`
 }
 

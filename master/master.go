@@ -92,10 +92,10 @@ func Start() {
 	e.POST("/register", func(c echo.Context) error {
 		reg := &utils.Register{}
 		if err := c.Bind(reg); err != nil {
-			return c.JSON(http.StatusOK, H{"code": 1, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 1, "message": err.Error()})
 		}
 		if err := c.Validate(reg); err != nil {
-			return c.JSON(http.StatusOK, H{"code": 2, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 2, "message": err.Error()})
 		}
 		// check if there is duplicate
 		err := db.View(func(tx *bolt.Tx) error {
@@ -107,12 +107,12 @@ func Start() {
 			return nil
 		})
 		if err != nil {
-			return c.JSON(http.StatusOK, H{"code": 3, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 3, "message": err.Error()})
 		}
 		// save data
 		val, err := json.Marshal(reg)
 		if err != nil {
-			return c.JSON(http.StatusOK, H{"code": 4, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 4, "message": err.Error()})
 		}
 		err = db.Update(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte("AgentBucket"))
@@ -120,7 +120,7 @@ func Start() {
 			return err
 		})
 		if err != nil {
-			return c.JSON(http.StatusOK, H{"code": 5, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 5, "message": err.Error()})
 		}
 		return c.JSON(http.StatusOK, H{"code": 0, "message": "register success"})
 	})
@@ -128,30 +128,27 @@ func Start() {
 	e.POST("/cmd", func(c echo.Context) error {
 		cmd := &utils.CMD{}
 		if err := c.Bind(cmd); err != nil {
-			return c.JSON(http.StatusOK, H{"code": 1, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 1, "message": err.Error()})
 		}
 		if err := c.Validate(cmd); err != nil {
-			return c.JSON(http.StatusOK, H{"code": 2, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 2, "message": err.Error()})
 		}
 		// get all agents that available in both db and request
 		var agents []string
 		db.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte("AgentBucket"))
-			src := []string{}
 			b.ForEach(func(k, _ []byte) error {
 				if utils.FindValInSlice(cmd.Agents, string(k)) {
-					src = append(src, string(k))
+					agents = append(agents, string(k))
 				}
 				return nil
 			})
-			// copy data
-			copy(agents, src)
 			return nil
 		})
 		// start nats client
-		nc, err := nats.Connect(ns.ClientURL())
+		nc, err := nats.Connect(ns.ClientURL(), nats.UserInfo("nats", "123qwe"))
 		if err != nil {
-			return c.JSON(http.StatusOK, H{"code": 3, "message": err})
+			return c.JSON(http.StatusOK, H{"code": 3, "message": err.Error()})
 		}
 		defer nc.Close()
 		// start to send cmd to agents
@@ -178,19 +175,17 @@ func Start() {
 	})
 
 	e.GET("/agents", func(c echo.Context) error {
-		var infos []string
+		var val []string
 		db.View(func(tx *bolt.Tx) error {
 			b := tx.Bucket([]byte("AgentBucket"))
-			var val []string
 			b.ForEach(func(k, v []byte) error {
 				val = append(val, string(v))
 				return nil
 			})
-			copy(infos, val)
 			return nil
 		})
 		var agents []utils.Register
-		for _, i := range infos {
+		for _, i := range val {
 			a := utils.Register{}
 			json.Unmarshal([]byte(i), &a)
 			agents = append(agents, a)
@@ -201,22 +196,4 @@ func Start() {
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
 
-	// nc, err := nats.Connect("192.168.1.188", nats.UserInfo("nats", "123qwe"))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// log.Println("connect nats-server success")
-	// defer nc.Close()
-
-	// // Send the request
-	// msg, err := nc.Request("agent1", []byte("fuck hello ,,,"), 5*time.Second)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // Use the response
-	// log.Printf("Reply: %s", msg.Data)
-
-	// // Close the connection
-	// nc.Close()
 }

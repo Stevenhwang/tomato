@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -33,21 +34,21 @@ func Start() {
 	d, _ := disk.Usage("/")
 	log.Printf("DISK: Total: %s, Free:%s, UsedPercent:%.2f%%\n", humanize.Bytes(d.Total), humanize.Bytes(d.Free), d.UsedPercent)
 	l, _ := load.Avg()
-	log.Printf("LOAD: load1: %f, load5: %f, load15: %f", l.Load1, l.Load5, l.Load15)
+	log.Printf("LOAD: load1: %f, load5: %.2f, load15: %.2f", l.Load1, l.Load5, l.Load15)
 	// register agent
 	httpClient := http.Client{Timeout: 5 * time.Second}
 	info := utils.Register{Name: "agent1",
 		Info: utils.Info{
-			Mem:  utils.MD{Total: humanize.Bytes(v.Total), Free: humanize.Bytes(v.Free), UsedPercent: v.UsedPercent},
-			Disk: utils.MD{Total: humanize.Bytes(d.Total), Free: humanize.Bytes(d.Free), UsedPercent: d.UsedPercent},
-			Load: utils.LD{Load1: l.Load1, Load5: l.Load5, Load15: l.Load15},
+			Mem:  utils.MD{Total: humanize.Bytes(v.Total), Free: humanize.Bytes(v.Free), UsedPercent: fmt.Sprintf("%.2f%%", v.UsedPercent)},
+			Disk: utils.MD{Total: humanize.Bytes(d.Total), Free: humanize.Bytes(d.Free), UsedPercent: fmt.Sprintf("%.2f%%", d.UsedPercent)},
+			Load: utils.LD{Load1: fmt.Sprintf("%.2f%%", l.Load1), Load5: fmt.Sprintf("%.2f%%", l.Load5), Load15: fmt.Sprintf("%.2f%%", l.Load15)},
 		}}
 	post, err := json.Marshal(&info)
 	if err != nil {
 		panic(err)
 	}
 	pbody := bytes.NewBuffer(post)
-	resp, err := httpClient.Post("http://192.168.1.106:1323", "application/json", pbody)
+	resp, err := httpClient.Post("http://192.168.1.106:1323/register", "application/json", pbody)
 	if err != nil {
 		panic(err)
 	}
