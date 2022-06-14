@@ -185,6 +185,8 @@ func Start() {
 				}
 				if msg != nil {
 					results = append(results, utils.Response{Agent: agent, Msg: string(msg.Data)})
+				} else {
+					results = append(results, utils.Response{Agent: agent, Msg: "NO RESPONSE"})
 				}
 				wg.Done()
 			}(a)
