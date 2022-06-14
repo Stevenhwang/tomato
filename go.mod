@@ -6,6 +6,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/go-playground/validator/v10 v10.11.0
+	github.com/google/uuid v1.1.2
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/nats-io/nats-server/v2 v2.8.4
 	github.com/nats-io/nats.go v1.16.0

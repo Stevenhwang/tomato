@@ -33,6 +33,17 @@ func (cv *customValidator) Validate(i interface{}) error {
 	return nil
 }
 
+func customHTTPErrorHandler(err error, c echo.Context) {
+	code := http.StatusInternalServerError
+	message := err.Error()
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+		message = fmt.Sprintf("%v", he.Message)
+	}
+	// c.Logger().Error(err)
+	c.JSON(code, H{"code": code, "message": message})
+}
+
 func Start() {
 	// start nats server
 	opts := &server.Options{Username: "nats", Password: "123qwe"}
@@ -84,13 +95,15 @@ func Start() {
 	e.Use(middleware.Recover())
 	// validater
 	e.Validator = &customValidator{validator: validator.New()}
+	// error handler
+	e.HTTPErrorHandler = customHTTPErrorHandler
 	// Routes
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Tomato")
 	})
 
 	e.POST("/register", func(c echo.Context) error {
-		reg := &utils.Register{}
+		reg := &utils.Agent{}
 		if err := c.Bind(reg); err != nil {
 			return c.JSON(http.StatusOK, H{"code": 1, "message": err.Error()})
 		}
@@ -102,7 +115,11 @@ func Start() {
 			b := tx.Bucket([]byte("AgentBucket"))
 			v := b.Get([]byte(reg.Name))
 			if v != nil {
-				return errors.New("duplicated agent")
+				age := &utils.Agent{}
+				json.Unmarshal(v, age)
+				if reg.Info.ID == age.Info.ID {
+					return errors.New("duplicated agent")
+				}
 			}
 			return nil
 		})
@@ -184,9 +201,9 @@ func Start() {
 			})
 			return nil
 		})
-		var agents []utils.Register
+		var agents []utils.Agent
 		for _, i := range val {
-			a := utils.Register{}
+			a := utils.Agent{}
 			json.Unmarshal([]byte(i), &a)
 			agents = append(agents, a)
 		}

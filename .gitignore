@@ -6,3 +6,4 @@
 *.yaml
 *.exe
 *.db
+*.lock

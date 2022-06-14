@@ -15,6 +15,7 @@ import (
 	"tomato/utils"
 
 	"github.com/dustin/go-humanize"
+	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"
@@ -46,9 +47,17 @@ func Start() {
 	l, _ := load.Avg()
 	log.Printf("LOAD: load1: %f, load5: %.2f, load15: %.2f", l.Load1, l.Load5, l.Load15)
 	// register agent
-	httpClient := http.Client{Timeout: 5 * time.Second}
-	info := utils.Register{Name: "agent1",
+	var id string
+	reglock := "./register.lock"
+	if utils.PathExists(reglock) {
+		c, _ := os.ReadFile(reglock)
+		id = string(c)
+	} else {
+		id = uuid.New().String()
+	}
+	info := utils.Agent{Name: "agent1",
 		Info: utils.Info{
+			ID:   id,
 			Mem:  utils.MD{Total: humanize.Bytes(v.Total), Free: humanize.Bytes(v.Free), UsedPercent: fmt.Sprintf("%.2f%%", v.UsedPercent)},
 			Disk: utils.MD{Total: humanize.Bytes(d.Total), Free: humanize.Bytes(d.Free), UsedPercent: fmt.Sprintf("%.2f%%", d.UsedPercent)},
 			Load: utils.LD{Load1: fmt.Sprintf("%.2f", l.Load1), Load5: fmt.Sprintf("%.2f", l.Load5), Load15: fmt.Sprintf("%.2f", l.Load15)},
@@ -58,6 +67,7 @@ func Start() {
 		panic(err)
 	}
 	pbody := bytes.NewBuffer(post)
+	httpClient := http.Client{Timeout: 5 * time.Second}
 	resp, err := httpClient.Post("http://192.168.1.106:1323/register", "application/json", pbody)
 	if err != nil {
 		panic(err)

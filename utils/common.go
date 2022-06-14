@@ -13,12 +13,13 @@ type LD struct {
 }
 
 type Info struct {
-	Mem  MD `json:"mem" validate:"required,dive,required"`
-	Disk MD `json:"disk" validate:"required,dive,required"`
-	Load LD `json:"load" validate:"required,dive,required"`
+	ID   string `json:"id" validate:"required"`
+	Mem  MD     `json:"mem" validate:"required,dive,required"`
+	Disk MD     `json:"disk" validate:"required,dive,required"`
+	Load LD     `json:"load" validate:"required,dive,required"`
 }
 
-type Register struct {
+type Agent struct {
 	Name string `json:"name" validate:"required"`
 	Info Info   `json:"info" validate:"required,dive,required"`
 }
