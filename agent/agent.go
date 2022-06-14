@@ -30,10 +30,7 @@ type response struct {
 
 func shellExec(cmd string) string {
 	res := exec.Command("bash", "-c", cmd)
-	output, err := res.CombinedOutput()
-	if err != nil {
-		return err.Error()
-	}
+	output, _ := res.CombinedOutput()
 	return string(output)
 }
 

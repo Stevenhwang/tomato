@@ -175,15 +175,17 @@ func Start() {
 		for _, a := range agents {
 			wg.Add(1)
 			go func(agent string) {
-				msg, err := nc.Request(agent, []byte(cmd.CMD), 10*time.Second)
 				lock.Lock()
+				defer lock.Unlock()
+				msg, err := nc.Request(agent, []byte(cmd.CMD), 10*time.Second)
 				if err != nil {
 					results = append(results, utils.Response{Agent: agent, Msg: err.Error()})
-					lock.Unlock()
 					wg.Done()
+					return
 				}
-				results = append(results, utils.Response{Agent: agent, Msg: string(msg.Data)})
-				lock.Unlock()
+				if msg != nil {
+					results = append(results, utils.Response{Agent: agent, Msg: string(msg.Data)})
+				}
 				wg.Done()
 			}(a)
 		}
