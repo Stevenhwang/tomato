@@ -84,6 +84,8 @@ func Start() {
 		panic(err)
 	}
 	log.Println(r.Message)
+	// write lock file
+	os.WriteFile(reglock, []byte(id), 0600)
 	// start subscribe
 	nc, err := nats.Connect("192.168.1.106",
 		nats.UserInfo("nats", "123qwe"),    // 会一直重连，密码不能错
