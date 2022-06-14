@@ -117,7 +117,7 @@ func Start() {
 			if v != nil {
 				age := &utils.Agent{}
 				json.Unmarshal(v, age)
-				if reg.Info.ID == age.Info.ID {
+				if reg.Info.ID != age.Info.ID {
 					return errors.New("duplicated agent")
 				}
 			}
