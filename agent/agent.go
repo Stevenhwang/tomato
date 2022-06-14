@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"time"
 	"tomato/utils"
@@ -24,6 +25,15 @@ import (
 type response struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+func shellExec(cmd string) string {
+	res := exec.Command("bash", "-c", cmd)
+	output, err := res.CombinedOutput()
+	if err != nil {
+		return err.Error()
+	}
+	return string(output)
 }
 
 func Start() {
@@ -81,7 +91,8 @@ func Start() {
 	if _, err := nc.Subscribe("agent1", func(m *nats.Msg) {
 		// 监听到master的消息，回复
 		log.Println(string(m.Data))
-		m.Respond([]byte(time.Now().String()))
+		res := shellExec(string(m.Data))
+		m.Respond([]byte(res))
 	}); err != nil {
 		log.Println(err)
 	}
